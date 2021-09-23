@@ -78,6 +78,8 @@ public class Robot extends TimedRobot {
     SwerveModuleState state = joysticks.getDesiredState();
     if (state.speedMetersPerSecond > 0) {
       swerve.setDesiredState(state);
+    } else {
+      swerve.stop();
     }
   }
 

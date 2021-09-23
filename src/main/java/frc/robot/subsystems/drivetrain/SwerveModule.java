@@ -50,6 +50,10 @@ public class SwerveModule {
         pidController.setIZone(gains.getIZone());
         pidController.setOutputRange(-1.0,1.0);
     }
+
+    public void stop() {
+        _drivePID.setReference(0, ControlType.kVelocity);
+    }
     
     public void setDesiredState(SwerveModuleState desiredState) {
         // Optimize the reference state to avoid spinning further than 90 degrees
