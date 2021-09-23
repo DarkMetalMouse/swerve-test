@@ -3,6 +3,7 @@ package frc.robot.subsystems.drivetrain;
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
@@ -49,14 +50,40 @@ public class SwerveModule {
         pidController.setIZone(gains.getIZone());
         pidController.setOutputRange(-1.0,1.0);
     }
+    
     public void setDesiredState(SwerveModuleState desiredState) {
-        double radian = (_steeringEncoder.getPosition() - Math.floor(_steeringEncoder.getPosition())) 
-                            * 2 * Math.PI 
-                            * Constants.Drivetrain.SwerveModuleConstants.steeringDPR;
         // Optimize the reference state to avoid spinning further than 90 degrees
-        SwerveModuleState state =
-            SwerveModuleState.optimize(desiredState, new Rotation2d(radian));
-        // https://github.com/Team364/BaseFalconSwerve/blob/main/src/main/java/frc/lib/util/CTREModuleState.java
+        SwerveModuleState state = optimizeAngle(desiredState, Rotation2d.fromDegrees(getAngle()));
+
+
+        _steeringPID.setReference(Math.floor(getAbsSteeringPos()) + (state.angle.getDegrees() / 360), ControlType.kPosition);
+        _drivePID.setReference(driveVelocityToRPM(state.speedMetersPerSecond), ControlType.kVelocity);
     }
 
+    private static SwerveModuleState optimizeAngle(SwerveModuleState desiredState, Rotation2d currentRadian ) {
+        Rotation2d angleDelta = currentRadian.minus(desiredState.angle);
+        double speed = desiredState.speedMetersPerSecond;
+        if(Math.abs(angleDelta.getDegrees()) > 90) {
+            speed = -speed;
+            angleDelta = Rotation2d.fromDegrees(180).minus(angleDelta);
+        }
+        return new SwerveModuleState(speed,angleDelta);
+
+
+    }
+
+    private double driveVelocityToRPM(double velocity) {
+        // divide by distance per revolution, multiply by a minute to get RPM
+        return velocity / (Constants.Drivetrain.SwerveModuleConstants.driveDPRMeters) * 60; 
+    }
+
+    private double getAbsSteeringPos() {
+        return _steeringEncoder.getPosition() * Constants.Drivetrain.SwerveModuleConstants.steeringRatio;
+    }
+
+    private double getAngle() {
+        double pos = getAbsSteeringPos();
+        pos = pos - Math.floor(pos);
+        return pos * 360;
+    }
 }
