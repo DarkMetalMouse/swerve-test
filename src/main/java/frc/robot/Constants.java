@@ -39,4 +39,9 @@ public class Constants {
         public static final SwerveModuleConstants BLModule = new SwerveModuleConstants(new Translation2d(-0.215, -0.215), 5, 6);
         public static final SwerveModuleConstants BRModule = new SwerveModuleConstants(new Translation2d(0.215, -0.215), 7, 8);
     }
+    public static final class Joysticks {
+        public static final double speedScalar = 0.7;
+        public static final double deadband = 0.15;
+        public static final int port = 0;
+    }
 }
