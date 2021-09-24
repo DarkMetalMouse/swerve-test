@@ -9,6 +9,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Constants.Drivetrain.SwerveModuleConstants;
 import frc.robot.util.PIDFGains;
@@ -27,19 +28,31 @@ public class SwerveModule {
     private CANEncoder _steeringEncoder;
     private Translation2d _position;
 
+    private double _setpoint;
+
     public SwerveModule(SwerveModuleConstants constants) {
-        configSparkMax(_driveSparkMax, constants.idDrive, _drivePID, _driveEncoder, constants.driveGains);
-        configSparkMax(_steeringSparkMax, constants.idSteering, _steeringPID, _steeringEncoder, constants.steeringGains);
+        _driveSparkMax = configSparkMax(constants.idDrive, _drivePID, _driveEncoder, constants.driveGains);
+        _steeringSparkMax = configSparkMax(constants.idSteering, _steeringPID, _steeringEncoder, constants.steeringGains);
+        
+        _drivePID = _driveSparkMax.getPIDController();
+        _driveEncoder = _driveSparkMax.getEncoder();
+
+        _steeringPID = _steeringSparkMax.getPIDController();
+        _steeringEncoder = _steeringSparkMax.getEncoder();
+
+        setPIDGains(_drivePID, constants.driveGains);
+        setPIDGains(_steeringPID, constants.steeringGains);
+                
         _position = constants.position;
+
+        _setpoint = 0;
     }
 
-    private static void configSparkMax(CANSparkMax sparkMax,int id, CANPIDController pidController, CANEncoder encoder, PIDFGains gains) {
-        sparkMax = new CANSparkMax(id, MotorType.kBrushless);
-        pidController = sparkMax.getPIDController();
-        encoder = sparkMax.getEncoder();
-        sparkMax.restoreFactoryDefaults();
+    private static CANSparkMax configSparkMax(int id, CANPIDController pidController, CANEncoder encoder, PIDFGains gains) {
+        CANSparkMax sparkMax = new CANSparkMax(id, MotorType.kBrushless);
         sparkMax.setInverted(false);
-        setPIDGains(pidController, gains);
+        
+        return sparkMax;
     }
 
     private static void setPIDGains(CANPIDController pidController, PIDFGains gains) {
@@ -51,26 +64,35 @@ public class SwerveModule {
         pidController.setOutputRange(-1.0,1.0);
     }
 
+    public void setDriveSteering(double percent) {
+        this._steeringSparkMax.set(percent);
+    }
+    public void setDriveDrive(double percent) {
+        this._driveSparkMax.set(percent);
+    }
+
     public void stop() {
-        _drivePID.setReference(0, ControlType.kVelocity);
+        setDriveDrive(0);
+        setDriveSteering(0);
     }
     
     public void setDesiredState(SwerveModuleState desiredState) {
         // Optimize the reference state to avoid spinning further than 90 degrees
-        SwerveModuleState state = optimizeAngle(desiredState, Rotation2d.fromDegrees(getAngle()));
-
-
-        _steeringPID.setReference(Math.floor(getAbsSteeringPos()) + (state.angle.getDegrees() / 360), ControlType.kPosition);
-        _drivePID.setReference(driveVelocityToRPM(state.speedMetersPerSecond), ControlType.kVelocity);
+        SwerveModuleState state = desiredState;
+        // SwerveModuleState state = optimizeAngle(desiredState, Rotation2d.fromDegrees(getAngle()));
+        SmartDashboard.putString("sparkmax state", state.toString());
+        _setpoint = (Math.floor(getAbsSteeringPos()) + (state.angle.getDegrees() / 360)) / Constants.Drivetrain.SwerveModuleConstants.steeringRatio;
+        _steeringPID.setReference(_setpoint, ControlType.kPosition);
+        // _drivePID.setReference(driveVelocityToRPM(state.speedMetersPerSecond), ControlType.kVelocity);
     }
 
     private static SwerveModuleState optimizeAngle(SwerveModuleState desiredState, Rotation2d currentRadian ) {
         Rotation2d angleDelta = currentRadian.minus(desiredState.angle);
         double speed = desiredState.speedMetersPerSecond;
-        if(Math.abs(angleDelta.getDegrees()) > 90) {
-            speed = -speed;
-            angleDelta = Rotation2d.fromDegrees(180).minus(angleDelta);
-        }
+        // if(Math.abs(angleDelta.getDegrees()) > 90) {
+        //     speed = -speed;
+        //     angleDelta = Rotation2d.fromDeg`inus(angleDelta);
+        // }
         return new SwerveModuleState(speed,angleDelta);
 
 
@@ -81,13 +103,25 @@ public class SwerveModule {
         return velocity / (Constants.Drivetrain.SwerveModuleConstants.driveDPRMeters) * 60; 
     }
 
-    private double getAbsSteeringPos() {
+    public double getAbsSteeringPos() {
         return _steeringEncoder.getPosition() * Constants.Drivetrain.SwerveModuleConstants.steeringRatio;
     }
 
-    private double getAngle() {
+    public double getAngle() {
         double pos = getAbsSteeringPos();
         pos = pos - Math.floor(pos);
         return pos * 360;
+    }
+
+    public double getDrivePercent() {
+        return _driveSparkMax.get();
+    }
+
+    public double getSteeringSetpoint() {
+        return _setpoint;
+    }
+
+    public void resetSteeringEncoder() {
+        _steeringEncoder.setPosition(0);
     }
 }

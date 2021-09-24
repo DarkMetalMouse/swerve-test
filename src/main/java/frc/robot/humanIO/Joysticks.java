@@ -16,6 +16,13 @@ public class Joysticks {
         return Math.abs(value) > Constants.Joysticks.deadband ? value : 0;
     }
 
+    public double getY() {
+        return calculateDeadband(joystick.getY());
+    }
+    public double getX() {
+        return calculateDeadband(joystick.getX());
+    }
+
     public SwerveModuleState getDesiredState() {
         double x = joystick.getX()*-1.0;
         double y = joystick.getY()*-1.0;
@@ -24,6 +31,10 @@ public class Joysticks {
                                             * Constants.Joysticks.speedScalar;
         Rotation2d angle = new Rotation2d(x, y);
         return new SwerveModuleState(speed,angle);
+    }
+
+    public boolean isTriggerPressed() {
+        return joystick.getTriggerPressed();
     }
 
 }
