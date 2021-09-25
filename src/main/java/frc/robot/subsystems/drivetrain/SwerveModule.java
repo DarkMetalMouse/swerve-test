@@ -9,7 +9,6 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Constants.Drivetrain.SwerveModuleConstants;
 import frc.robot.util.PIDFGains;
@@ -79,7 +78,7 @@ public class SwerveModule {
     public void setDesiredState(SwerveModuleState desiredState) {
         // Optimize the reference state to avoid spinning further than 90 degrees
         SwerveModuleState state = optimizeAngle(desiredState, Rotation2d.fromDegrees(getAngle()));
-        SmartDashboard.putString("sparkmax state", state.toString());
+
         _setpoint = addDeltaFromZeroToEncoder(state.angle.getDegrees());
         _steeringPID.setReference(_setpoint, ControlType.kPosition);
         // _drivePID.setReference(driveVelocityToRPM(state.speedMetersPerSecond), ControlType.kVelocity);
@@ -103,11 +102,6 @@ public class SwerveModule {
 
     public double addDeltaFromZeroToEncoder(double angle) {
         double pos = getAbsSteeringPos();
-        if (pos < 0) {
-            pos = Math.ceil(pos);
-        } else {
-            pos = Math.floor(pos);
-        }
         return (pos + (angle / 360)) / Constants.Drivetrain.SwerveModuleConstants.steeringRatio;
     }
 
