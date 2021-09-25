@@ -9,7 +9,6 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.humanIO.Joysticks;
 import frc.robot.subsystems.drivetrain.SwerveModule;
 
@@ -78,32 +77,14 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
-    // SwerveModuleState state = joysticks.getDesiredState();
-    // SmartDashboard.putString("state", state.toString());
-    // if (state.speedMetersPerSecond > 0) {
-    //   swerve.setDesiredState(state);
-    // } else {
-    //   swerve.stop();
-    // }
-    // // SmartDashboard.putNumber("drive power", swerve.getDrivePercent());
-    SmartDashboard.putNumber("joystic x", joysticks.getX());
-    SmartDashboard.putNumber("joystic y", joysticks.getY());
-    SmartDashboard.putNumber("steering setpoint", swerve.getSteeringSetpoint());
-    SmartDashboard.putNumber("steering pos", swerve.getAbsSteeringPos());
-    SmartDashboard.putNumber("steering angle", swerve.getAngle());
-
-
-    if (joysticks.isTriggerPressed()){
-      // swerve.stop();
+    // if (joysticks.isTriggerPressed()){
       SwerveModuleState state = joysticks.getDesiredState();
-      SmartDashboard.putString("state", state.toString());
       if (state.speedMetersPerSecond > 0) {
         swerve.setDesiredState(state);
       } else {
         swerve.stop();
       }
-    }
-
+    // }
   }
 
   /**
