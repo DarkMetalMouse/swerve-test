@@ -80,12 +80,12 @@ public class SwerveModule {
         // Optimize the reference state to avoid spinning further than 90 degrees
         SwerveModuleState state = optimizeAngle(desiredState, Rotation2d.fromDegrees(getAngle()));
         SmartDashboard.putString("sparkmax state", state.toString());
-        _setpoint = (Math.floor(getAbsSteeringPos()) + (state.angle.getDegrees() / 360)) / Constants.Drivetrain.SwerveModuleConstants.steeringRatio;
+        _setpoint = addDeltaFromZeroToEncoder(state.angle.getDegrees());
         _steeringPID.setReference(_setpoint, ControlType.kPosition);
         // _drivePID.setReference(driveVelocityToRPM(state.speedMetersPerSecond), ControlType.kVelocity);
     }
 
-    private static SwerveModuleState optimizeAngle(SwerveModuleState desiredState, Rotation2d currentRadian) {
+    public static SwerveModuleState optimizeAngle(SwerveModuleState desiredState, Rotation2d currentRadian) {
         Rotation2d angle = desiredState.angle.minus(currentRadian);
         double speed = desiredState.speedMetersPerSecond;
         if(Math.abs(angle.getDegrees()) > 90) {
@@ -99,6 +99,16 @@ public class SwerveModule {
         return new SwerveModuleState(speed,angle);
 
 
+    }
+
+    public double addDeltaFromZeroToEncoder(double angle) {
+        double pos = getAbsSteeringPos();
+        if (pos < 0) {
+            pos = Math.ceil(pos);
+        } else {
+            pos = Math.floor(pos);
+        }
+        return (pos + (angle / 360)) / Constants.Drivetrain.SwerveModuleConstants.steeringRatio;
     }
 
     private double driveVelocityToRPM(double velocity) {
