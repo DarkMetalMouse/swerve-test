@@ -25,11 +25,11 @@ public class Joysticks {
 
     public SwerveModuleState getDesiredState() {
         double x = joystick.getX()*-1.0;
-        double y = joystick.getY()*-1.0;
-        double speed = calculateDeadband(Math.hypot(x, y)) 
+        double y = joystick.getY()*1.0;
+        double speed = calculateDeadband(Math.hypot(y, x)) 
                                             * Constants.Drivetrain.SwerveModuleConstants.freeSpeedMetersPerSecond 
                                             * Constants.Joysticks.speedScalar;
-        Rotation2d angle = new Rotation2d(x, y);
+        Rotation2d angle = new Rotation2d(y, x);
         return new SwerveModuleState(speed,angle);
     }
 
