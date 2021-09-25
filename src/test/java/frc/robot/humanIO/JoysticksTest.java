@@ -26,35 +26,35 @@ public class JoysticksTest {
 
         when(_joystick.getY()).thenReturn((double) -1.0);
         when(_joystick.getX()).thenReturn((double) 0.0);
-        assertEquals(0, _joysticks.getDesiredState().angle.getDegrees(), 0.01);
+        assertEquals(360, _joysticks.getDesiredState().angle.getDegrees(), 0.01);
 
         when(_joystick.getY()).thenReturn((double) -1.0);
         when(_joystick.getX()).thenReturn((double) 1.0);
-        assertEquals(45, _joysticks.getDesiredState().angle.getDegrees(), 0.01);
+        assertEquals(360 - 45, _joysticks.getDesiredState().angle.getDegrees(), 0.01);
 
         when(_joystick.getY()).thenReturn((double) 0.0);
         when(_joystick.getX()).thenReturn((double) 1.0);
-        assertEquals(90, _joysticks.getDesiredState().angle.getDegrees(), 0.01);
+        assertEquals(360 - 90, _joysticks.getDesiredState().angle.getDegrees(), 0.01);
 
         when(_joystick.getY()).thenReturn((double) 1.0);
         when(_joystick.getX()).thenReturn((double) 1.0);
-        assertEquals(135, _joysticks.getDesiredState().angle.getDegrees(), 0.01);
+        assertEquals(360 - 135, _joysticks.getDesiredState().angle.getDegrees(), 0.01);
 
         when(_joystick.getY()).thenReturn((double) 1.0);
         when(_joystick.getX()).thenReturn((double) 0.0);
-        assertEquals(180, _joysticks.getDesiredState().angle.getDegrees(), 0.01);
+        assertEquals(360 - 180, _joysticks.getDesiredState().angle.getDegrees(), 0.01);
 
         when(_joystick.getY()).thenReturn((double) 1.0);
         when(_joystick.getX()).thenReturn((double) -1.0);
-        assertEquals(225, _joysticks.getDesiredState().angle.getDegrees(), 0.01);
+        assertEquals(360 - 225, _joysticks.getDesiredState().angle.getDegrees(), 0.01);
 
         when(_joystick.getY()).thenReturn((double) 0.0);
         when(_joystick.getX()).thenReturn((double) -1.0);
-        assertEquals(270, _joysticks.getDesiredState().angle.getDegrees(), 0.01);
+        assertEquals(360 - 270, _joysticks.getDesiredState().angle.getDegrees(), 0.01);
 
         when(_joystick.getY()).thenReturn((double) -1.0);
         when(_joystick.getX()).thenReturn((double) -1.0);
-        assertEquals(315, _joysticks.getDesiredState().angle.getDegrees(), 0.01);
+        assertEquals(360 - 315, _joysticks.getDesiredState().angle.getDegrees(), 0.01);
 
         when(_joystick.getY()).thenReturn((double) 0.0);
         when(_joystick.getX()).thenReturn((double) 0.0);
