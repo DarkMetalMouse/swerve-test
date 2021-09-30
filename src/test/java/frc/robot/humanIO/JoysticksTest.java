@@ -18,7 +18,7 @@ public class JoysticksTest {
     @BeforeClass
     public static void init() {
         _joysticks = new Joysticks();
-        _joystick = (Joystick) Utils.ReflectAndSpy(_joysticks, "joystick");
+        _joystick = (Joystick) Utils.ReflectAndSpy(_joysticks, "_driveJoystick");
     }
 
     @Test
