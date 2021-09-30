@@ -3,11 +3,10 @@ package frc.robot.subsystems.drivetrain;
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.ControlType;
 
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj.kinematics.SwerveModuleState;
 import frc.robot.Constants;
 import frc.robot.Constants.Drivetrain.SwerveModuleConstants;
@@ -25,7 +24,6 @@ public class SwerveModule {
     private CANSparkMax _steeringSparkMax;
     private CANPIDController _steeringPID;
     private CANEncoder _steeringEncoder;
-    private Translation2d _position;
 
     private double _setpoint;
 
@@ -42,8 +40,6 @@ public class SwerveModule {
         setPIDGains(_drivePID, constants.driveGains);
         setPIDGains(_steeringPID, constants.steeringGains);
                 
-        _position = constants.position;
-
         _setpoint = 0;
     }
 
@@ -62,7 +58,7 @@ public class SwerveModule {
         pidController.setIZone(gains.getIZone());
         pidController.setOutputRange(-1.0,1.0);
     }
-
+    
     public void setDriveSteering(double percent) {
         this._steeringSparkMax.set(percent);
     }
