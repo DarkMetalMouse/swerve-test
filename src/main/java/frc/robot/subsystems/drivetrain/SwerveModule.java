@@ -25,6 +25,8 @@ public class SwerveModule {
     private CANPIDController _steeringPID;
     private CANEncoder _steeringEncoder;
 
+    private CTREAbsMagEncoder _absEncoder;
+
     private double _setpoint;
 
     public SwerveModule(SwerveModuleConstants constants) {
@@ -41,6 +43,13 @@ public class SwerveModule {
         setPIDGains(_steeringPID, constants.steeringGains);
                 
         _setpoint = 0;
+
+        _absEncoder = new CTREAbsMagEncoder(constants.absEncoderPort, constants.steeringZeroValue);
+        calibrateSteering();
+    }
+
+    public void calibrateSteering(){
+        this._steeringEncoder.setPosition(_absEncoder.getPosition() / 4096.0 / Constants.Drivetrain.SwerveModuleConstants.steeringRatio);
     }
 
     private static CANSparkMax configSparkMax(int id, CANPIDController pidController, CANEncoder encoder, PIDFGains gains) {

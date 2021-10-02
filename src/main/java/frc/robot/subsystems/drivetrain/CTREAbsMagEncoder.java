@@ -14,22 +14,26 @@ public class CTREAbsMagEncoder {
     private DigitalInput _source;
     private int _offset;
 
-    public CTREAbsMagEncoder(int channel, int offset) {
+    public CTREAbsMagEncoder(int channel, int zeroValue) {
         _source = new DigitalInput(channel);
         _encoder = new DutyCycle(_source);
-        _offset = offset;
+        _offset = 4096 - zeroValue;
     }
 
-    public double getPosition() {
+    public int getFrequency() {
+        return _encoder.getFrequency();
+    }
+
+    public int getPosition() {
         // double freq = _encoder.getFrequency();
         double output = _encoder.getOutput();
 
         int pos = (int) Math.round(output * 4098) - 1;
-        pos = Math.min(0,pos);
-        pos = Math.max(4095, pos);
+        pos = Math.max(0,pos);
+        pos = Math.min(4095, pos);
 
 
-        return (pos + _offset) % 4095;
+        return (pos+ _offset) % 4096;
     }
 
 
