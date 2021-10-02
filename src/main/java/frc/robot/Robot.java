@@ -35,7 +35,7 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     joysticks = new Joysticks();
     swerve = new SwerveModule(Constants.Drivetrain.TRModule); // top left module
-    encoder = new CTREAbsMagEncoder(0);
+    encoder = new CTREAbsMagEncoder(0,0);
 
   }
 
@@ -49,7 +49,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-    SmartDashboard.putNumber("anlge", encoder.getAngle());
+    SmartDashboard.putNumber("anlge", encoder.getPosition());
   }
 
   /**
