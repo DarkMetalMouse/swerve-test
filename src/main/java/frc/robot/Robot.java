@@ -9,9 +9,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.humanIO.Joysticks;
-import frc.robot.subsystems.drivetrain.CTREAbsMagEncoder;
 import frc.robot.subsystems.drivetrain.SwerveModule;
 
 /**
@@ -25,7 +23,6 @@ public class Robot extends TimedRobot {
 
   public static SwerveModule swerve;
   public static Joysticks joysticks;
-  public static CTREAbsMagEncoder encoder;
 
   /**
    * This function is run when the robot is first started up and should be
@@ -35,7 +32,6 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     joysticks = new Joysticks();
     swerve = new SwerveModule(Constants.Drivetrain.TRModule); // top left module
-    encoder = new CTREAbsMagEncoder(0,0);
 
   }
 
@@ -49,7 +45,6 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-    SmartDashboard.putNumber("anlge", encoder.getPosition());
   }
 
   /**
