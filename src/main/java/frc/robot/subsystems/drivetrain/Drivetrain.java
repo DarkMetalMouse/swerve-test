@@ -1,5 +1,11 @@
 package frc.robot.subsystems.drivetrain;
 
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.sensors.PigeonIMU;
+import com.ctre.phoenix.sensors.PigeonIMU.FusionStatus;
+import com.ctre.phoenix.sensors.PigeonIMU.PigeonState;
+
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.kinematics.SwerveModuleState;
 import frc.robot.Constants;
@@ -14,6 +20,9 @@ public class Drivetrain {
     private SwerveModule _brModule;
     private SwerveModule _blModule;
 
+    private TalonSRX _pigeonTalon;
+    private PigeonIMU _pigeon;
+
     private DBugSwerveDriveKinematics _kinematics;
 
     public Drivetrain() {
@@ -26,13 +35,16 @@ public class Drivetrain {
                                                 Constants.Drivetrain.TLModule.position,
                                                 Constants.Drivetrain.BRModule.position,
                                                 Constants.Drivetrain.BLModule.position);
+        
+        _pigeonTalon = new TalonSRX(Constants.Drivetrain.pigeonTalonId);
+        _pigeon = new PigeonIMU(_pigeonTalon);
     }
 
     public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
         SwerveModuleState[] moduleStates =
             _kinematics.toSwerveModuleStates(
-                fieldRelative
-                    ? new ChassisSpeeds() // todo add gyro //ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, m_gyro.getRotation2d())
+                fieldRelative && _pigeon.getState() == PigeonState.Ready
+                    ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, Rotation2d.fromDegrees(getHeading()))
                     : new ChassisSpeeds(xSpeed, ySpeed, rot));
         DBugSwerveDriveKinematics.normalizeWheelSpeeds(moduleStates, Constants.Drivetrain.SwerveModuleConstants.freeSpeedMetersPerSecond * Constants.Joysticks.speedScalar);
 
@@ -40,5 +52,12 @@ public class Drivetrain {
         _tlModule.setDesiredState(moduleStates[1]);
         _brModule.setDesiredState(moduleStates[2]);
         _blModule.setDesiredState(moduleStates[3]);
+    }
+
+    private double getHeading() {
+        FusionStatus status = new FusionStatus();
+        _pigeon.getFusedHeading(status);
+
+        return status.heading;
     }
 }
