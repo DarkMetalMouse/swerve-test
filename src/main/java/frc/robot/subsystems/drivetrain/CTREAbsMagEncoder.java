@@ -36,5 +36,10 @@ public class CTREAbsMagEncoder {
         return (pos+ _offset) % 4096;
     }
 
+    public void close() {
+        _encoder.close();
+        _source.close();
+    }
+
 
 }

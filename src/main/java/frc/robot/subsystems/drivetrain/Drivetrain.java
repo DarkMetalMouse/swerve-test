@@ -41,4 +41,11 @@ public class Drivetrain {
         _brModule.setDesiredState(moduleStates[2]);
         _blModule.setDesiredState(moduleStates[3]);
     }
+
+    public void close() {
+        _trModule.close();
+        _tlModule.close();
+        _brModule.close();
+        _tlModule.close();
+    }
 }

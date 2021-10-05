@@ -5,10 +5,10 @@ import static org.mockito.Mockito.when;
 
 import com.revrobotics.CANEncoder;
 
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.kinematics.SwerveModuleState;
 import frc.robot.Constants;
@@ -19,14 +19,18 @@ public class SwerveModuleTest {
     static SwerveModule _swerve;
     static CANEncoder _steeringEncoder;
 
-    // TODO fix test
-    // @BeforeClass
+    @BeforeClass
     public static void init() {
         _swerve = new SwerveModule(Constants.Drivetrain.TRModule);
         _steeringEncoder = (CANEncoder) Utils.ReflectAndSpy(_swerve, "_steeringEncoder");
     }
 
-    // @Test
+    @AfterClass
+    public static void close() {
+        _swerve.close();
+    }
+
+    @Test
     public void optimizeAngle(){
         SwerveModuleState ret = runOptimizeAngle(70,0);
         assertEquals(-70, ret.angle.getDegrees(), 0.01);
@@ -53,7 +57,7 @@ public class SwerveModuleTest {
         return SwerveModule.optimizeAngle(new SwerveModuleState(1,Rotation2d.fromDegrees(wanted)), Rotation2d.fromDegrees(current));
     }
 
-    // @Test
+    @Test
     public void addDeltaToEncoder() {
         when(_steeringEncoder.getPosition()).thenReturn((double) 12.7);
         assertEquals(12.7 + (90.0 / 360.0) / Constants.Drivetrain.SwerveModuleConstants.steeringRatio, _swerve.addDeltaFromZeroToEncoder(90),0.01);

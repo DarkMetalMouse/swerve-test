@@ -136,4 +136,8 @@ public class SwerveModule {
     public void resetSteeringEncoder() {
         _steeringEncoder.setPosition(0);
     }
+
+    public void close() {
+        _absEncoder.close();
+    }
 }

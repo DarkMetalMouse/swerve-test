@@ -1,5 +1,6 @@
 package frc.robot.subsystems.drivetrain;
 
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -19,6 +20,11 @@ public class DrivetrainTest {
     public static void init() {
         drivetrain = new Drivetrain();
         _kinematics = (DBugSwerveDriveKinematics) Utils.ReflectAndSpy(drivetrain, "_kinematics");
+    }
+
+    @AfterClass
+    public static void close() {
+        drivetrain.close();
     }
 
     @Test
