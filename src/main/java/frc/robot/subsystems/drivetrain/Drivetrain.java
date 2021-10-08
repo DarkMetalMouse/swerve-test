@@ -1,3 +1,5 @@
+// CR: In general, please document this whole file (class and methods).
+
 package frc.robot.subsystems.drivetrain;
 
 import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
@@ -17,6 +19,8 @@ public class Drivetrain {
     private DBugSwerveDriveKinematics _kinematics;
 
     public Drivetrain() {
+        // CR: DO NOT create instances in the constructor. Please have those instances as arguments of Drivetrain constructor.
+        // Why? Because in this way, you couple yourself to the usage of SwerveModule in the robot drivetrain.
         _trModule = new SwerveModule(Constants.Drivetrain.TRModule);
         _tlModule = new SwerveModule(Constants.Drivetrain.TLModule);
         _brModule = new SwerveModule(Constants.Drivetrain.BRModule);
@@ -34,6 +38,7 @@ public class Drivetrain {
                 fieldRelative
                     ? new ChassisSpeeds() // todo add gyro //ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, m_gyro.getRotation2d())
                     : new ChassisSpeeds(xSpeed, ySpeed, rot));
+        // CR: This                 is                    a                   very                  long                 line
         DBugSwerveDriveKinematics.normalizeWheelSpeeds(moduleStates, Constants.Drivetrain.SwerveModuleConstants.freeSpeedMetersPerSecond * Constants.Joysticks.speedScalar);
 
         _trModule.setDesiredState(moduleStates[0]);

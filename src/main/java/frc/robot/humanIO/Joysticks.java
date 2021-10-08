@@ -1,3 +1,5 @@
+// CR: In general, please document this whole file (class and methods).
+
 package frc.robot.humanIO;
 
 import edu.wpi.first.wpilibj.Joystick;
@@ -29,6 +31,7 @@ public class Joysticks {
         return calculateDeadband(-_driveJoystick.getX());
     }
 
+    // CR: Why does the Joystick class should know this is a swerve drive? Seems like a methos in a wrong place.
     public SwerveModuleState getDesiredState() {
         double y = -_driveJoystick.getX();
         double x = -_driveJoystick.getY();

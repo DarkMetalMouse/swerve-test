@@ -1,3 +1,5 @@
+// CR: In general, please document this whole file (class and methods).
+
 package frc.robot.subsystems.drivetrain;
 
 import com.revrobotics.CANEncoder;
@@ -28,8 +30,12 @@ public class SwerveModule {
     private CTREAbsMagEncoder _absEncoder;
 
     private double _setpoint;
-
+    // CR: The SwerveModuleConstants should not be taken from the class itself,
+    // you should define a type outside of the config (common for example) - that is implemented by the config.
     public SwerveModule(SwerveModuleConstants constants) {
+        // CR: I don't like the way you call a function to create a configured instance of Spark Max.
+        // Please think about creating a class that extends the Spark Max and configure it the way you want.
+        // CR: In addition, the using of SparkMax instance here, coupling you to the usage of Spark Max.
         _driveSparkMax = configSparkMax(constants.idDrive, _drivePID, _driveEncoder, constants.driveGains);
         _steeringSparkMax = configSparkMax(constants.idSteering, _steeringPID, _steeringEncoder, constants.steeringGains);
         
@@ -44,11 +50,13 @@ public class SwerveModule {
                 
         _setpoint = 0;
 
+        // CR: The usage of CTREAbsMagEncoder here, coupling you to the usage of CTRE Absolute Magentic Encoder.
         _absEncoder = new CTREAbsMagEncoder(constants.absEncoderPort, constants.steeringZeroValue);
         calibrateSteering();
     }
 
     public void calibrateSteering(){
+        // CR: Hmmm... 4096.0... Nice number (please move to config).
         this._steeringEncoder.setPosition(_absEncoder.getPosition() / 4096.0 / Constants.Drivetrain.SwerveModuleConstants.steeringRatio);
     }
 
@@ -89,6 +97,7 @@ public class SwerveModule {
         // _drivePID.setReference(driveVelocityToRPM(state.speedMetersPerSecond), ControlType.kVelocity);
     }
 
+    // CR: How you optimize the angle here? Please rename this method.
     public static SwerveModuleState optimizeAngle(SwerveModuleState desiredState, Rotation2d currentRadian) {
         Rotation2d angle = desiredState.angle.minus(currentRadian);
         double speed = desiredState.speedMetersPerSecond;
@@ -111,6 +120,7 @@ public class SwerveModule {
     }
 
     private double driveVelocityToRPM(double velocity) {
+        // CR: Put 60 in config.
         // divide by distance per revolution, multiply by a minute to get RPM
         return velocity / (Constants.Drivetrain.SwerveModuleConstants.driveDPRMeters) * 60; 
     }
