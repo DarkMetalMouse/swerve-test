@@ -24,7 +24,7 @@ public class Constants {
             public final PIDFGains steeringGains;
 
             public SwerveModuleConstants(Translation2d position, int idDrive, int idSteering) {
-                this(position, idDrive, idSteering, new PIDFGains(1, 0, 0, 0, 1000, 0), new PIDFGains(0.05, 0, 0, 0, 0.1, 0));
+                this(position, idDrive, idSteering, new PIDFGains(0.05, 0, 0, 0, 0.1, 0), new PIDFGains(0.35, 0, 0, 0, 0.1, 0));
             }
             public SwerveModuleConstants(Translation2d position, int idDrive, int idSteering, PIDFGains driveGains, PIDFGains steeringGains) {
                 this.position = position;
