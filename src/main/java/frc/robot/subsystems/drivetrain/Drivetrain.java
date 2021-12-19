@@ -8,6 +8,7 @@ import com.ctre.phoenix.sensors.PigeonIMU.PigeonState;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 
 /**
@@ -41,11 +42,15 @@ public class Drivetrain {
     }
 
     public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
+        xSpeed = -xSpeed;
+        ySpeed = -ySpeed;
+        rot *= 2;
+
         SwerveModuleState[] moduleStates =
             _kinematics.toSwerveModuleStates(
                 fieldRelative && _pigeon.getState() == PigeonState.Ready
                     ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, Rotation2d.fromDegrees(getHeading()))
-                    : new ChassisSpeeds(-xSpeed, -ySpeed, -rot));
+                    : new ChassisSpeeds(xSpeed, ySpeed, rot));
         DBugSwerveDriveKinematics.normalizeWheelSpeeds(moduleStates, Constants.Drivetrain.SwerveModuleConstants.freeSpeedMetersPerSecond * Constants.Joysticks.speedScalar);
 
         _trModule.setDesiredState(moduleStates[0]);
@@ -57,7 +62,11 @@ public class Drivetrain {
     private double getHeading() {
         FusionStatus status = new FusionStatus();
         _pigeon.getFusedHeading(status);
-
+        
         return status.heading;
+    }
+
+    public void resetYaw() {
+        _pigeon.setFusedHeading(0);
     }
 }
