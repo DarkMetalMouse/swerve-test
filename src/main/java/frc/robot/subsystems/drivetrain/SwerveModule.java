@@ -76,7 +76,9 @@ public class SwerveModule {
         SwerveModuleState state = optimizeAngle(desiredState, Rotation2d.fromDegrees(getAngle()));
 
         _setpoint = addDeltaFromZeroToEncoder(state.angle.getDegrees());
-        _steeringPID.setReference(_setpoint, ControlType.kPosition);
+        if (state.speedMetersPerSecond != 0) { 
+            _steeringPID.setReference(_setpoint, ControlType.kPosition);
+        }
         _driveSparkMax.set(state.speedMetersPerSecond / Constants.Drivetrain.SwerveModuleConstants.freeSpeedMetersPerSecond);
         // _drivePID.setReference(driveVelocityToRPM(state.speedMetersPerSecond / 10), ControlType.kVelocity);
     }
