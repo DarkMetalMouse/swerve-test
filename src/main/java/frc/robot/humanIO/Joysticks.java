@@ -1,17 +1,18 @@
 package frc.robot.humanIO;
 
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.kinematics.SwerveModuleState;
 import frc.robot.Constants;
 
 public class Joysticks {
-    private Joystick _driveJoystick;
-    private Joystick _steerJoystick;
+
+    private XboxController _controller;
 
     public Joysticks() {
-        _driveJoystick = new Joystick(Constants.Joysticks.drivePort);
-        _steerJoystick = new Joystick(Constants.Joysticks.steerPort);
+        _controller = new XboxController(0);
     }
 
     private static double calculateDeadband(double value) {
@@ -19,19 +20,19 @@ public class Joysticks {
     }
 
     public double getSteerX() {
-        return calculateDeadband(-_steerJoystick.getX());
+        return calculateDeadband(_controller.getX(Hand.kRight));
     }
 
     public double getDriveY() {
-        return calculateDeadband(-_driveJoystick.getY());
+        return calculateDeadband(-_controller.getY(Hand.kLeft));
     }
     public double getDriveX() {
-        return calculateDeadband(-_driveJoystick.getX());
+        return calculateDeadband(_controller.getX(Hand.kLeft));
     }
 
     public SwerveModuleState getDesiredState() {
-        double y = -_driveJoystick.getX();
-        double x = -_driveJoystick.getY();
+        double y = _controller.getX(Hand.kLeft);
+        double x = _controller.getY(Hand.kLeft);
         double speed = calculateDeadband(Math.hypot(x, y)) 
                                             * Constants.Drivetrain.SwerveModuleConstants.freeSpeedMetersPerSecond 
                                             * Constants.Joysticks.speedScalar;
@@ -40,10 +41,6 @@ public class Joysticks {
             angle = Rotation2d.fromDegrees(angle.getDegrees() + 360);
         }
         return new SwerveModuleState(speed,angle);
-    }
-
-    public boolean isTriggerPressed() {
-        return _driveJoystick.getTriggerPressed();
     }
 
 }
