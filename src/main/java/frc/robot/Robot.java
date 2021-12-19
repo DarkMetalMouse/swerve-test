@@ -8,9 +8,8 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.kinematics.SwerveModuleState;
 import frc.robot.humanIO.Joysticks;
-import frc.robot.subsystems.drivetrain.SwerveModule;
+import frc.robot.subsystems.drivetrain.Drivetrain;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -21,7 +20,7 @@ import frc.robot.subsystems.drivetrain.SwerveModule;
  */
 public class Robot extends TimedRobot {
 
-  public static SwerveModule swerve;
+  public static Drivetrain drivetrain;
   public static Joysticks joysticks;
 
   /**
@@ -31,7 +30,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     joysticks = new Joysticks();
-    swerve = new SwerveModule(Constants.Drivetrain.TRModule); // top left module
+    drivetrain = new Drivetrain();    
   }
 
   /**
@@ -77,14 +76,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
-    // if (joysticks.isTriggerPressed()){
-      SwerveModuleState state = joysticks.getDesiredState();
-      if (state.speedMetersPerSecond > 0) {
-        swerve.setDesiredState(state);
-      } else {
-        swerve.stop();
-      }
-    // }
+    drivetrain.drive(joysticks.getDriveX(), joysticks.getDriveY(), joysticks.getSteerX(), false);
+    
   }
 
   /**

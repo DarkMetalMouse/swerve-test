@@ -33,7 +33,7 @@ public class Drivetrain {
             _kinematics.toSwerveModuleStates(
                 fieldRelative
                     ? new ChassisSpeeds() // todo add gyro //ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, m_gyro.getRotation2d())
-                    : new ChassisSpeeds(xSpeed, ySpeed, rot));
+                    : new ChassisSpeeds(-xSpeed, -ySpeed, -rot));
         DBugSwerveDriveKinematics.normalizeWheelSpeeds(moduleStates, Constants.Drivetrain.SwerveModuleConstants.freeSpeedMetersPerSecond * Constants.Joysticks.speedScalar);
 
         _trModule.setDesiredState(moduleStates[0]);

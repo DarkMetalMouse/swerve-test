@@ -68,7 +68,7 @@ public class SwerveModule {
 
     public void stop() {
         setDriveDrive(0);
-        setDriveSteering(0);
+        // setDriveSteering(0);
     }
     
     public void setDesiredState(SwerveModuleState desiredState) {
@@ -77,7 +77,8 @@ public class SwerveModule {
 
         _setpoint = addDeltaFromZeroToEncoder(state.angle.getDegrees());
         _steeringPID.setReference(_setpoint, ControlType.kPosition);
-        // _drivePID.setReference(driveVelocityToRPM(state.speedMetersPerSecond), ControlType.kVelocity);
+        _driveSparkMax.set(state.speedMetersPerSecond / Constants.Drivetrain.SwerveModuleConstants.freeSpeedMetersPerSecond);
+        // _drivePID.setReference(driveVelocityToRPM(state.speedMetersPerSecond / 10), ControlType.kVelocity);
     }
 
     public static SwerveModuleState optimizeAngle(SwerveModuleState desiredState, Rotation2d currentRadian) {
