@@ -20,6 +20,8 @@ import frc.robot.subsystems.drivetrain.Drivetrain;
  */
 public class Robot extends TimedRobot {
 
+
+  private static boolean _fieldRelative = true;
   public static Drivetrain drivetrain;
   public static Joysticks joysticks;
 
@@ -30,7 +32,8 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     joysticks = new Joysticks();
-    drivetrain = new Drivetrain();    
+    drivetrain = new Drivetrain();
+    drivetrain.resetYaw();
   }
 
   /**
@@ -76,8 +79,14 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
-    drivetrain.drive(joysticks.getDriveX(), joysticks.getDriveY(), joysticks.getSteerX(), false);
-    
+    drivetrain.drive(joysticks.getDriveX(), joysticks.getDriveY(), joysticks.getSteerX(), _fieldRelative);
+    if (joysticks.backButtonPressed()) {
+      drivetrain.resetYaw();
+      System.out.println("reset");
+    }
+    if (joysticks.yButtonPressed()) {
+      _fieldRelative = !_fieldRelative;
+    }
   }
 
   /**
