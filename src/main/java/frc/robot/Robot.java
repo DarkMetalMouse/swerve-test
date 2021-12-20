@@ -8,6 +8,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.humanIO.Joysticks;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 
@@ -46,6 +47,9 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
+    drivetrain.printSetpoints();
+    SmartDashboard.putNumber("RPM", SmartDashboard.getNumber("RPM", 0));
+
   }
 
   /**
@@ -72,6 +76,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
+    drivetrain.drive(0.1, 0, 0, false);
+    drivetrain.drive(0, 0, 0, false);
   }
 
   /**
@@ -79,10 +85,12 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
+    drivetrain.setDriveRPM(SmartDashboard.getNumber("RPM", 0));
+
+
     drivetrain.drive(joysticks.getDriveX(), joysticks.getDriveY(), joysticks.getSteerX(), _fieldRelative);
     if (joysticks.backButtonPressed()) {
       drivetrain.resetYaw();
-      System.out.println("reset");
     }
     if (joysticks.yButtonPressed()) {
       _fieldRelative = !_fieldRelative;

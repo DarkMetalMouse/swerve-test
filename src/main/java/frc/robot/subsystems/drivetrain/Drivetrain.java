@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.wpilibj.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 
 /**
@@ -16,10 +17,8 @@ import frc.robot.Constants;
  */
 public class Drivetrain {
 
-    private SwerveModule _trModule;
-    private SwerveModule _tlModule;
-    private SwerveModule _brModule;
-    private SwerveModule _blModule;
+    private SwerveModule[] _modules;
+
 
     private TalonSRX _pigeonTalon;
     private PigeonIMU _pigeon;
@@ -27,10 +26,13 @@ public class Drivetrain {
     private SwerveDriveKinematics _kinematics;
 
     public Drivetrain() {
-        _trModule = new SwerveModule(Constants.Drivetrain.TRModule);
-        _tlModule = new SwerveModule(Constants.Drivetrain.TLModule);
-        _brModule = new SwerveModule(Constants.Drivetrain.BRModule);
-        _blModule = new SwerveModule(Constants.Drivetrain.BLModule);
+        _modules = new SwerveModule[] {
+            new SwerveModule(Constants.Drivetrain.TRModule),
+            new SwerveModule(Constants.Drivetrain.TLModule),
+            new SwerveModule(Constants.Drivetrain.BRModule),
+            new SwerveModule(Constants.Drivetrain.BLModule)
+        };
+
 
         _kinematics = new SwerveDriveKinematics(Constants.Drivetrain.TRModule.position, 
                                                 Constants.Drivetrain.TLModule.position,
@@ -53,10 +55,16 @@ public class Drivetrain {
                     : new ChassisSpeeds(xSpeed, ySpeed, rot));
         SwerveDriveKinematics.normalizeWheelSpeeds(moduleStates, Constants.Drivetrain.SwerveModuleConstants.freeSpeedMetersPerSecond * Constants.Joysticks.speedScalar);
 
-        _trModule.setDesiredState(moduleStates[0]);
-        _tlModule.setDesiredState(moduleStates[1]);
-        _brModule.setDesiredState(moduleStates[2]);
-        _blModule.setDesiredState(moduleStates[3]);
+
+        for (int i = 0; i < _modules.length; i++) {
+            _modules[i].setDesiredState(moduleStates[i]);
+        }
+    }
+
+    public void setDriveRPM(double voltage) {
+        for (SwerveModule swerveModule : _modules) {
+            swerveModule.setDriveRPM(voltage);
+        }
     }
 
     private double getHeading() {
@@ -68,5 +76,13 @@ public class Drivetrain {
 
     public void resetYaw() {
         _pigeon.setFusedHeading(0);
+    }
+
+    public void printSetpoints() {
+        for (int i = 0; i < _modules.length; i++) {
+            SmartDashboard.putNumber("steer " + i   , _modules[i].getSteeringSetpoint());
+            SmartDashboard.putNumber("drive " + i, _modules[i].getDriveSetpoint());
+            SmartDashboard.putNumber("speed " + i, _modules[i].getDriveRPM());
+        }
     }
 }

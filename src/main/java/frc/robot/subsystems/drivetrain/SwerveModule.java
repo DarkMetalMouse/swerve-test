@@ -25,7 +25,8 @@ public class SwerveModule {
     private CANPIDController _steeringPID;
     private CANEncoder _steeringEncoder;
 
-    private double _setpoint;
+    private double _steerSetpoint;
+    private double _driveSetpoint;
 
     public SwerveModule(SwerveModuleConstants constants) {
         _driveSparkMax = configSparkMax(constants.idDrive, _drivePID, _driveEncoder, constants.driveGains);
@@ -40,7 +41,7 @@ public class SwerveModule {
         setPIDGains(_drivePID, constants.driveGains);
         setPIDGains(_steeringPID, constants.steeringGains);
                 
-        _setpoint = 0;
+        _steerSetpoint = 0;
     }
 
     private static CANSparkMax configSparkMax(int id, CANPIDController pidController, CANEncoder encoder, PIDFGains gains) {
@@ -62,8 +63,8 @@ public class SwerveModule {
     public void setDriveSteering(double percent) {
         this._steeringSparkMax.set(percent);
     }
-    public void setDriveDrive(double percent) {
-        this._driveSparkMax.set(percent);
+    public void setDriveDrive(double voltage) {
+        this._driveSparkMax.setVoltage(voltage);
     }
 
     public void stop() {
@@ -75,12 +76,15 @@ public class SwerveModule {
         // Optimize the reference state to avoid spinning further than 90 degrees
         SwerveModuleState state = optimizeAngle(desiredState, Rotation2d.fromDegrees(getAngle()));
 
-        _setpoint = addDeltaFromZeroToEncoder(state.angle.getDegrees());
+        _steerSetpoint = addDeltaFromZeroToEncoder(state.angle.getDegrees());
+        _driveSetpoint = driveVelocityToRPM(state.speedMetersPerSecond);
+
         if (state.speedMetersPerSecond != 0) { 
-            _steeringPID.setReference(_setpoint, ControlType.kPosition);
+            _steeringPID.setReference(_steerSetpoint, ControlType.kPosition);
         }
-        _driveSparkMax.set(state.speedMetersPerSecond / Constants.Drivetrain.SwerveModuleConstants.freeSpeedMetersPerSecond);
-        // _drivePID.setReference(driveVelocityToRPM(state.speedMetersPerSecond / 10), ControlType.kVelocity);
+        // _driveSparkMax.set(1 * Math.signum(state.speedMetersPerSecond));
+
+        // _drivePID.setReference(_driveSetpoint, ControlType.kVelocity);
     }
 
     public static SwerveModuleState optimizeAngle(SwerveModuleState desiredState, Rotation2d currentRadian) {
@@ -124,7 +128,19 @@ public class SwerveModule {
     }
 
     public double getSteeringSetpoint() {
-        return _setpoint;
+        return _steerSetpoint;
+    }
+
+    public double getDriveSetpoint() {
+        return _driveSetpoint;
+    }
+
+    public double getDriveRPM() {
+        return _driveEncoder.getVelocity();
+    }
+
+    public void setDriveRPM(double RPM) {
+        _drivePID.setReference(RPM,ControlType.kVelocity);
     }
 
     public void resetSteeringEncoder() {
