@@ -7,6 +7,7 @@ import com.ctre.phoenix.sensors.PigeonIMU.PigeonState;
 
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.wpilibj.kinematics.SwerveModuleState;
 import frc.robot.Constants;
 
@@ -23,7 +24,7 @@ public class Drivetrain {
     private TalonSRX _pigeonTalon;
     private PigeonIMU _pigeon;
 
-    private DBugSwerveDriveKinematics _kinematics;
+    private SwerveDriveKinematics _kinematics;
 
     public Drivetrain() {
         _trModule = new SwerveModule(Constants.Drivetrain.TRModule);
@@ -31,7 +32,7 @@ public class Drivetrain {
         _brModule = new SwerveModule(Constants.Drivetrain.BRModule);
         _blModule = new SwerveModule(Constants.Drivetrain.BLModule);
 
-        _kinematics = new DBugSwerveDriveKinematics(Constants.Drivetrain.TRModule.position, 
+        _kinematics = new SwerveDriveKinematics(Constants.Drivetrain.TRModule.position, 
                                                 Constants.Drivetrain.TLModule.position,
                                                 Constants.Drivetrain.BRModule.position,
                                                 Constants.Drivetrain.BLModule.position);
@@ -50,7 +51,7 @@ public class Drivetrain {
                 fieldRelative && _pigeon.getState() == PigeonState.Ready
                     ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, Rotation2d.fromDegrees(getHeading()))
                     : new ChassisSpeeds(xSpeed, ySpeed, rot));
-        DBugSwerveDriveKinematics.normalizeWheelSpeeds(moduleStates, Constants.Drivetrain.SwerveModuleConstants.freeSpeedMetersPerSecond * Constants.Joysticks.speedScalar);
+        SwerveDriveKinematics.normalizeWheelSpeeds(moduleStates, Constants.Drivetrain.SwerveModuleConstants.freeSpeedMetersPerSecond * Constants.Joysticks.speedScalar);
 
         _trModule.setDesiredState(moduleStates[0]);
         _tlModule.setDesiredState(moduleStates[1]);
