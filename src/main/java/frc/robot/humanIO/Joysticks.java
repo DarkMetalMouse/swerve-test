@@ -19,15 +19,19 @@ public class Joysticks {
         return Math.abs(value) > Constants.Joysticks.deadband ? value : 0;
     }
 
+    private static double calculateDeadband(double value, double other) {
+        return Math.abs(value) > Constants.Joysticks.deadband  || Math.abs(other) > Constants.Joysticks.deadband ? value : 0;
+    }
+
     public double getSteerX() {
         return calculateDeadband(_controller.getX(Hand.kRight));
     }
 
     public double getDriveY() {
-        return calculateDeadband(-_controller.getY(Hand.kLeft));
+        return calculateDeadband(-_controller.getY(Hand.kLeft),-_controller.getX(Hand.kLeft));
     }
     public double getDriveX() {
-        return calculateDeadband(_controller.getX(Hand.kLeft));
+        return calculateDeadband(_controller.getX(Hand.kLeft),-_controller.getY(Hand.kLeft));
     }
 
     public SwerveModuleState getDesiredState() {
@@ -41,6 +45,14 @@ public class Joysticks {
             angle = Rotation2d.fromDegrees(angle.getDegrees() + 360);
         }
         return new SwerveModuleState(speed,angle);
+    }
+
+    public boolean backButtonPressed() {
+        return _controller.getBackButtonPressed();
+    }
+
+    public boolean yButtonPressed() {
+        return _controller.getYButtonPressed();
     }
 
 }
