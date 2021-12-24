@@ -35,6 +35,7 @@ public class Robot extends TimedRobot {
     joysticks = new Joysticks();
     drivetrain = new Drivetrain();
     drivetrain.resetYaw();
+    SmartDashboard.putNumber("RPM",0);
   }
 
   /**
@@ -48,6 +49,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     drivetrain.printSetpoints();
+    
     SmartDashboard.putNumber("RPM", SmartDashboard.getNumber("RPM", 0));
 
   }
@@ -85,7 +87,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
-    drivetrain.setDriveRPM(SmartDashboard.getNumber("RPM", 0));
+    // drivetrain.setDriveRPM(SmartDashboard.getNumber("RPM", 0));
 
 
     drivetrain.drive(joysticks.getDriveX(), joysticks.getDriveY(), joysticks.getSteerX(), _fieldRelative);

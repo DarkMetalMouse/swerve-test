@@ -83,8 +83,10 @@ public class SwerveModule {
             _steeringPID.setReference(_steerSetpoint, ControlType.kPosition);
         }
         // _driveSparkMax.set(1 * Math.signum(state.speedMetersPerSecond));
-
-        // _drivePID.setReference(_driveSetpoint, ControlType.kVelocity);
+        if (state.speedMetersPerSecond == 0)
+            _driveSparkMax.set(0);
+        else
+        _drivePID.setReference(_driveSetpoint, ControlType.kVelocity);
     }
 
     public static SwerveModuleState optimizeAngle(SwerveModuleState desiredState, Rotation2d currentRadian) {
