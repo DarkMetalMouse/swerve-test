@@ -5,9 +5,11 @@ import com.ctre.phoenix.sensors.PigeonIMU;
 import com.ctre.phoenix.sensors.PigeonIMU.FusionStatus;
 import com.ctre.phoenix.sensors.PigeonIMU.PigeonState;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
@@ -22,6 +24,8 @@ public class Drivetrain {
     private TalonSRX _pigeonTalon;
     private PigeonIMU _pigeon;
 
+    private SwerveDriveOdometry _odometry;
+
     public Drivetrain() {
         _modules = new SwerveModule[] {
             new SwerveModule(Constants.Drivetrain.TRModule),
@@ -32,6 +36,8 @@ public class Drivetrain {
 
         _pigeonTalon = new TalonSRX(Constants.Drivetrain.pigeonTalonId);
         _pigeon = new PigeonIMU(_pigeonTalon);
+
+        _odometry = new SwerveDriveOdometry(Constants.Drivetrain.kinematics, getRotation2d());
     }
 
     public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
@@ -53,6 +59,20 @@ public class Drivetrain {
         for (int i = 0; i < _modules.length; i++) {
             _modules[i].setDesiredState(moduleStates[i]);
         }
+    }
+
+    public void periodic() {
+        // Update the odometry in the periodic block
+        _odometry.update(getRotation2d(), _modules[0].getState(), _modules[1].getState(), _modules[2].getState(),
+                _modules[3].getState());
+    }
+
+    public Pose2d getPose() {
+        return _odometry.getPoseMeters();
+    }
+
+    public void resetOdometry(Pose2d pose) {
+        _odometry.resetPosition(pose, getRotation2d());
     }
 
     public void setDriveRPM(double voltage) {

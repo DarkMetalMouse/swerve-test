@@ -72,6 +72,11 @@ public class SwerveModule {
         // setDriveSteering(0);
     }
     
+    public SwerveModuleState getState() {
+        // TODO: Do we need here getAbsSteeringPos or just _steeringEncoder.getPosition() ?
+        return new SwerveModuleState(_driveEncoder.getVelocity(), new Rotation2d(getAbsSteeringPos()));
+    }
+    
     public void setDesiredState(SwerveModuleState desiredState) {
         // Optimize the reference state to avoid spinning further than 90 degrees
         SwerveModuleState state = optimizeAngle(desiredState, Rotation2d.fromDegrees(getAngle()));

@@ -50,6 +50,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     drivetrain.printSetpoints();
+    drivetrain.periodic();
     
     SmartDashboard.putNumber("RPM", SmartDashboard.getNumber("RPM", 0));
 
