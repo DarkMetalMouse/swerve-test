@@ -19,11 +19,8 @@ public class Drivetrain {
 
     private SwerveModule[] _modules;
 
-
     private TalonSRX _pigeonTalon;
     private PigeonIMU _pigeon;
-
-    private SwerveDriveKinematics _kinematics;
 
     public Drivetrain() {
         _modules = new SwerveModule[] {
@@ -33,12 +30,6 @@ public class Drivetrain {
             new SwerveModule(Constants.Drivetrain.BLModule)
         };
 
-
-        _kinematics = new SwerveDriveKinematics(Constants.Drivetrain.TRModule.position, 
-                                                Constants.Drivetrain.TLModule.position,
-                                                Constants.Drivetrain.BRModule.position,
-                                                Constants.Drivetrain.BLModule.position);
-        
         _pigeonTalon = new TalonSRX(Constants.Drivetrain.pigeonTalonId);
         _pigeon = new PigeonIMU(_pigeonTalon);
     }
@@ -48,13 +39,16 @@ public class Drivetrain {
         ySpeed = -ySpeed;
         rot *= 2;
 
-        SwerveModuleState[] moduleStates =
-            _kinematics.toSwerveModuleStates(
-                fieldRelative && _pigeon.getState() == PigeonState.Ready
-                    ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, Rotation2d.fromDegrees(getHeading()))
-                    : new ChassisSpeeds(xSpeed, ySpeed, rot));
-        SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, Constants.Drivetrain.SwerveModuleConstants.freeSpeedMetersPerSecond * Constants.Joysticks.speedScalar);
+        SwerveModuleState[] moduleStates = Constants.Drivetrain.kinematics
+                .toSwerveModuleStates(fieldRelative && _pigeon.getState() == PigeonState.Ready
+                        ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, getRotation2d())
+                        : new ChassisSpeeds(xSpeed, ySpeed, rot));
+        setDesiredStates(moduleStates);
+    }
 
+    public void setDesiredStates(SwerveModuleState[] moduleStates) {
+        SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates,
+                Constants.Drivetrain.SwerveModuleConstants.freeSpeedMetersPerSecond * Constants.Joysticks.speedScalar);
 
         for (int i = 0; i < _modules.length; i++) {
             _modules[i].setDesiredState(moduleStates[i]);
@@ -72,6 +66,10 @@ public class Drivetrain {
         _pigeon.getFusedHeading(status);
         
         return status.heading;
+    }
+
+    private Rotation2d getRotation2d() {
+        return Rotation2d.fromDegrees(getHeading());
     }
 
     public void resetYaw() {

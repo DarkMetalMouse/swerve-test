@@ -1,6 +1,7 @@
 package frc.robot;
 
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import frc.robot.util.PIDFGains;
 
 /**
@@ -38,6 +39,9 @@ public class Constants {
         public static final SwerveModuleConstants TRModule = new SwerveModuleConstants(new Translation2d(0.215, 0.215), 1, 2);
         public static final SwerveModuleConstants BLModule = new SwerveModuleConstants(new Translation2d(-0.215, -0.215), 5, 6);
         public static final SwerveModuleConstants BRModule = new SwerveModuleConstants(new Translation2d(0.215, -0.215), 7, 8);
+
+        public static final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(TRModule.position,
+                TLModule.position, BRModule.position, BLModule.position);
 
         public static final int pigeonTalonId = 9;
     }
