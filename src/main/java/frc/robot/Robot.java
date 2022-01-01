@@ -7,8 +7,19 @@
 
 package frc.robot;
 
+import java.util.List;
+
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.controller.PIDController;
+import edu.wpi.first.wpilibj.controller.ProfiledPIDController;
+import edu.wpi.first.wpilibj.geometry.Pose2d;
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.trajectory.Trajectory;
+import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
+import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
+import frc.robot.autonomous.SwerveTrajectoryFollower;
 import frc.robot.humanIO.Joysticks;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.Constants.Drivetrain.SwerveModuleConstants;
@@ -24,6 +35,9 @@ public class Robot extends TimedRobot {
 
 
   private static boolean _fieldRelative = true;
+  private Trajectory _trajectory = getTrajectory();
+  private SwerveTrajectoryFollower _follower = getFollower(_trajectory);
+  private boolean _followerFinished;
   public static Drivetrain drivetrain;
   public static Joysticks joysticks;
 
@@ -37,6 +51,37 @@ public class Robot extends TimedRobot {
     drivetrain = new Drivetrain();
     drivetrain.resetYaw();
     SmartDashboard.putNumber("RPM",0);
+  }
+
+  private static Trajectory getTrajectory() {
+    TrajectoryConfig config = new TrajectoryConfig(Constants.Autonomous.kMaxSpeedMetersPerSecond,
+        Constants.Autonomous.kMaxAccelerationMetersPerSecondSquared)
+            // Add kinematics to ensure max speed is actually obeyed
+            .setKinematics(Constants.Drivetrain.kinematics);
+
+    // An example trajectory to follow. All units in meters.
+    return TrajectoryGenerator.generateTrajectory(
+        // Start at the origin facing the +X direction
+        new Pose2d(0, 0, new Rotation2d(0)),
+        // Pass through these two interior waypoints, making an 's' curve path
+        List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
+        // End 3 meters straight ahead of where we started, facing forward
+        new Pose2d(3, 0, new Rotation2d(0)), config);
+
+  }
+
+  private static SwerveTrajectoryFollower getFollower(Trajectory trajectory) {
+
+    var thetaController = new ProfiledPIDController(Constants.Autonomous.kPThetaController, 0, 0,
+        Constants.Autonomous.kThetaControllerConstraints);
+    thetaController.enableContinuousInput(-Math.PI, Math.PI);
+
+    SwerveTrajectoryFollower swerveTrajectoryFollower = new SwerveTrajectoryFollower(trajectory,
+        drivetrain::getPose, Constants.Drivetrain.kinematics,
+        new PIDController(Constants.Autonomous.kPXController, 0, 0),
+        new PIDController(Constants.Autonomous.kPYController, 0, 0), thetaController, drivetrain::setDesiredStates);
+
+    return swerveTrajectoryFollower;
   }
 
   /**
@@ -69,6 +114,10 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
+    // Reset odometry to the starting pose of the trajectory.
+    drivetrain.resetOdometry(_trajectory.getInitialPose());
+    _follower.initialize();
+    _followerFinished = false;
   }
 
   /**
@@ -76,6 +125,15 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousPeriodic() {
+    if (!_followerFinished) {
+      if (!_follower.isFinished()) {
+        _follower.execute();
+      } else {
+        // Stop execution and the robot.
+        _followerFinished = true;
+        drivetrain.drive(0, 0, 0, false);
+      }
+    }
   }
 
   @Override
