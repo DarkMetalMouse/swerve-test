@@ -1,6 +1,7 @@
 package frc.robot.subsystems.drivetrain;
 
 import com.ctre.phoenix.sensors.CANCoder;
+import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
@@ -47,7 +48,8 @@ public class SwerveModule {
         _steerSetpoint = 0;
 
         _driveCanCoder = new CANCoder(constants.canCoderId);
-        this._driveCanCoder.configMagnetOffset(-constants.cancoderZeroPosition);
+        this._driveCanCoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToZero);
+        this._driveCanCoder.configMagnetOffset(360 - constants.cancoderZeroPosition);
         calibrateSteering();
     }
 
