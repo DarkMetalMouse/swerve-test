@@ -22,14 +22,14 @@ public class Constants {
             public final PIDFGains driveGains;
             public final int idSteering;
             public final PIDFGains steeringGains;
-            public final int cancoderZeroPosition;
+            public final double cancoderZeroPosition;
             public final int canCoderId;
 
-            public SwerveModuleConstants(Translation2d position, int idDrive, int idSteering, int cancoderZeroPosition, int canCoderId) {
+            public SwerveModuleConstants(Translation2d position, int idDrive, int idSteering, double cancoderZeroPosition,int canCoderId) {
                 this(position, idDrive, idSteering, new PIDFGains(0.0002, 0, 0.01, 1.0/6/902.0, 50, 0), new PIDFGains(0.35, 0, 0, 0, 1, 0), cancoderZeroPosition, canCoderId);
             }
 
-            public SwerveModuleConstants(Translation2d position, int idDrive, int idSteering, PIDFGains driveGains, PIDFGains steeringGains, int encoderZeroPosition, int canCoderId) {
+            public SwerveModuleConstants(Translation2d position, int idDrive, int idSteering, PIDFGains driveGains, PIDFGains steeringGains, double encoderZeroPosition, int canCoderId) {
                 this.position = position;
                 this.idDrive = idDrive;
                 this.driveGains = driveGains;
@@ -40,10 +40,10 @@ public class Constants {
             }
         }
 
-        public static final SwerveModuleConstants TLModule = new SwerveModuleConstants(new Translation2d(-0.215, 0.215), 3, 4, 0, 10);
-        public static final SwerveModuleConstants TRModule = new SwerveModuleConstants(new Translation2d(0.215, 0.215), 1, 2, 0, 11);
-        public static final SwerveModuleConstants BLModule = new SwerveModuleConstants(new Translation2d(-0.215, -0.215), 5, 6, 0, 12);
-        public static final SwerveModuleConstants BRModule = new SwerveModuleConstants(new Translation2d(0.215, -0.215), 7, 8, 0, 13);
+        public static final SwerveModuleConstants TLModule = new SwerveModuleConstants(new Translation2d(-0.215, 0.215), 3, 4, 189.1, 11);
+        public static final SwerveModuleConstants TRModule = new SwerveModuleConstants(new Translation2d(0.215, 0.215), 1, 2, 0, 10);
+        public static final SwerveModuleConstants BLModule = new SwerveModuleConstants(new Translation2d(-0.215, -0.215), 5, 6, 289.8, 13);
+        public static final SwerveModuleConstants BRModule = new SwerveModuleConstants(new Translation2d(0.215, -0.215), 7, 8, 144.1, 12);
 
         public static final int pigeonTalonId = 9;
     }
