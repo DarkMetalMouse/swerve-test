@@ -47,6 +47,7 @@ public class SwerveModule {
         _steerSetpoint = 0;
 
         _driveCanCoder = new CANCoder(constants.canCoderId);
+        this._driveCanCoder.configMagnetOffset(-constants.cancoderZeroPosition);
         calibrateSteering();
     }
 
@@ -58,7 +59,7 @@ public class SwerveModule {
     }
 
     public void calibrateSteering() {
-        this._steeringEncoder.setPosition(_driveCanCoder.getPosition() / 360 / Constants.Drivetrain.SwerveModuleConstants.steeringRatio);
+        this._steeringEncoder.setPosition(_driveCanCoder.getAbsolutePosition() / 360 / Constants.Drivetrain.SwerveModuleConstants.steeringRatio);
     }
 
     private static void setPIDGains(SparkMaxPIDController pidController, PIDFGains gains) {
