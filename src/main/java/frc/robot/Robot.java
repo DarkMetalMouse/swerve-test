@@ -33,10 +33,10 @@ import frc.robot.Constants.Drivetrain.SwerveModuleConstants;
  */
 public class Robot extends TimedRobot {
 
-
+  
   private static boolean _fieldRelative = true;
   private Trajectory _trajectory = getTrajectory();
-  private SwerveTrajectoryFollower _follower = getFollower(_trajectory);
+  private SwerveTrajectoryFollower _follower;
   private boolean _followerFinished;
   public static Drivetrain drivetrain;
   public static Joysticks joysticks;
@@ -50,6 +50,7 @@ public class Robot extends TimedRobot {
     joysticks = new Joysticks();
     drivetrain = new Drivetrain();
     drivetrain.resetYaw();
+    _follower = getFollower(_trajectory);
     SmartDashboard.putNumber("RPM",0);
   }
 
@@ -96,7 +97,7 @@ public class Robot extends TimedRobot {
   public void robotPeriodic() {
     drivetrain.printSetpoints();
     drivetrain.periodic();
-    
+
     SmartDashboard.putNumber("RPM", SmartDashboard.getNumber("RPM", 0));
 
   }
