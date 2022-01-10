@@ -27,7 +27,7 @@ public class SwerveModule {
     private SparkMaxPIDController _steeringPID;
     private RelativeEncoder _steeringEncoder;
 
-    private CANCoder _driveCanCoder;
+    private CANCoder _absEncoder;
 
     private double _steerSetpoint;
     private double _driveSetpoint;
@@ -47,9 +47,9 @@ public class SwerveModule {
 
         _steerSetpoint = 0;
 
-        _driveCanCoder = new CANCoder(constants.canCoderId);
-        this._driveCanCoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToZero);
-        this._driveCanCoder.configMagnetOffset(360 - constants.cancoderZeroPosition);
+        _absEncoder = new CANCoder(constants.canCoderId);
+        this._absEncoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToZero);
+        this._absEncoder.configMagnetOffset(360 - constants.cancoderZeroPosition);
         calibrateSteering();
     }
 
@@ -61,7 +61,7 @@ public class SwerveModule {
     }
 
     public void calibrateSteering() {
-        this._steeringEncoder.setPosition(_driveCanCoder.getAbsolutePosition() / 360 / Constants.Drivetrain.SwerveModuleConstants.steeringRatio);
+        this._steeringEncoder.setPosition(_absEncoder.getAbsolutePosition() / 360 / Constants.Drivetrain.SwerveModuleConstants.steeringRatio);
     }
 
     private static void setPIDGains(SparkMaxPIDController pidController, PIDFGains gains) {
