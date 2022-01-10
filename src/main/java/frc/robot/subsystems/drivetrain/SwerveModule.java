@@ -1,13 +1,13 @@
 package frc.robot.subsystems.drivetrain;
 
-import com.revrobotics.CANEncoder;
-import com.revrobotics.CANPIDController;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import com.revrobotics.ControlType;
+import com.revrobotics.CANSparkMax.ControlType;
 
-import edu.wpi.first.wpilibj.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.kinematics.SwerveModuleState;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import frc.robot.Constants;
 import frc.robot.Constants.Drivetrain.SwerveModuleConstants;
 import frc.robot.util.PIDFGains;
@@ -19,11 +19,11 @@ import frc.robot.util.PIDFGains;
 public class SwerveModule {
 
     private CANSparkMax _driveSparkMax;
-    private CANPIDController _drivePID;
-    private CANEncoder _driveEncoder;
+    private SparkMaxPIDController _drivePID;
+    private RelativeEncoder _driveEncoder;
     private CANSparkMax _steeringSparkMax;
-    private CANPIDController _steeringPID;
-    private CANEncoder _steeringEncoder;
+    private SparkMaxPIDController _steeringPID;
+    private RelativeEncoder _steeringEncoder;
 
     private double _steerSetpoint;
     private double _driveSetpoint;
@@ -44,14 +44,14 @@ public class SwerveModule {
         _steerSetpoint = 0;
     }
 
-    private static CANSparkMax configSparkMax(int id, CANPIDController pidController, CANEncoder encoder, PIDFGains gains) {
+    private static CANSparkMax configSparkMax(int id, SparkMaxPIDController pidController, RelativeEncoder encoder, PIDFGains gains) {
         CANSparkMax sparkMax = new CANSparkMax(id, MotorType.kBrushless);
         sparkMax.setInverted(false);
         
         return sparkMax;
     }
 
-    private static void setPIDGains(CANPIDController pidController, PIDFGains gains) {
+    private static void setPIDGains(SparkMaxPIDController pidController, PIDFGains gains) {
         pidController.setI(gains.getI());
         pidController.setP(gains.getP());
         pidController.setD(gains.getD());

@@ -3,26 +3,25 @@ package frc.robot.subsystems.drivetrain;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
-import com.revrobotics.CANEncoder;
+import com.revrobotics.RelativeEncoder;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.kinematics.SwerveModuleState;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import frc.robot.Constants;
 import frc.utils.Utils;
 
 public class SwerveModuleTest {
 
     static SwerveModule _swerve;
-    static CANEncoder _steeringEncoder;
+    static RelativeEncoder _steeringEncoder;
 
     @BeforeClass
     public static void init() {
         _swerve = new SwerveModule(Constants.Drivetrain.TRModule);
-        _steeringEncoder = (CANEncoder) Utils.ReflectAndSpy(_swerve, "_steeringEncoder");
+        _steeringEncoder = (RelativeEncoder) Utils.ReflectAndSpy(_swerve, "_steeringEncoder");
     }
 
     // @Test

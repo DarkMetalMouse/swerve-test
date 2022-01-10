@@ -5,10 +5,10 @@ import com.ctre.phoenix.sensors.PigeonIMU;
 import com.ctre.phoenix.sensors.PigeonIMU.FusionStatus;
 import com.ctre.phoenix.sensors.PigeonIMU.PigeonState;
 
-import edu.wpi.first.wpilibj.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.wpilibj.kinematics.SwerveModuleState;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 
@@ -53,7 +53,7 @@ public class Drivetrain {
                 fieldRelative && _pigeon.getState() == PigeonState.Ready
                     ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, Rotation2d.fromDegrees(getHeading()))
                     : new ChassisSpeeds(xSpeed, ySpeed, rot));
-        SwerveDriveKinematics.normalizeWheelSpeeds(moduleStates, Constants.Drivetrain.SwerveModuleConstants.freeSpeedMetersPerSecond * Constants.Joysticks.speedScalar);
+        SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, Constants.Drivetrain.SwerveModuleConstants.freeSpeedMetersPerSecond * Constants.Joysticks.speedScalar);
 
 
         for (int i = 0; i < _modules.length; i++) {

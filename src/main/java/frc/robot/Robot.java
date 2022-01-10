@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.humanIO.Joysticks;
 import frc.robot.subsystems.drivetrain.Drivetrain;
+import frc.robot.Constants.Drivetrain.SwerveModuleConstants;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -90,7 +91,7 @@ public class Robot extends TimedRobot {
     // drivetrain.setDriveRPM(SmartDashboard.getNumber("RPM", 0));
 
 
-    drivetrain.drive(joysticks.getDriveX(), joysticks.getDriveY(), joysticks.getSteerX(), _fieldRelative);
+    drivetrain.drive(joysticks.getDriveX() * SwerveModuleConstants.freeSpeedMetersPerSecond, joysticks.getDriveY()* SwerveModuleConstants.freeSpeedMetersPerSecond, joysticks.getSteerX(), _fieldRelative);
     if (joysticks.backButtonPressed()) {
       drivetrain.resetYaw();
     }
