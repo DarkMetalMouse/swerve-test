@@ -1,10 +1,8 @@
 package frc.robot.humanIO;
 
-import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.GenericHID.Hand;
-import edu.wpi.first.wpilibj.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.kinematics.SwerveModuleState;
 import frc.robot.Constants;
 
 public class Joysticks {
@@ -16,7 +14,7 @@ public class Joysticks {
     }
 
     private static double calculateDeadband(double value) {
-        return Math.abs(value) > Constants.Joysticks.deadband ? value : 0;
+        return Math.abs(value) > Constants.Joysticks.deadband ? Math.copySign(value * value, value) : 0;
     }
 
     private static double calculateDeadband(double value, double other) {
@@ -24,19 +22,19 @@ public class Joysticks {
     }
 
     public double getSteerX() {
-        return calculateDeadband(_controller.getX(Hand.kRight));
+        return calculateDeadband(_controller.getRightX());
     }
 
     public double getDriveY() {
-        return calculateDeadband(-_controller.getY(Hand.kLeft),-_controller.getX(Hand.kLeft));
+        return calculateDeadband(-_controller.getLeftY(),-_controller.getLeftX());
     }
     public double getDriveX() {
-        return calculateDeadband(_controller.getX(Hand.kLeft),-_controller.getY(Hand.kLeft));
+        return calculateDeadband(_controller.getLeftX(),-_controller.getLeftY());
     }
 
     public SwerveModuleState getDesiredState() {
-        double y = _controller.getX(Hand.kLeft);
-        double x = _controller.getY(Hand.kLeft);
+        double y = _controller.getLeftX();
+        double x = _controller.getLeftY();
         double speed = calculateDeadband(Math.hypot(x, y)) 
                                             * Constants.Drivetrain.SwerveModuleConstants.freeSpeedMetersPerSecond 
                                             * Constants.Joysticks.speedScalar;

@@ -2,7 +2,7 @@ package frc.robot.subsystems.drivetrain;
 
 import org.junit.BeforeClass;
 
-import edu.wpi.first.wpilibj.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import frc.utils.Utils;
 
 /**
