@@ -1,10 +1,12 @@
 package frc.robot.subsystems.drivetrain;
 
+import com.ctre.phoenix.sensors.CANCoder;
+import com.ctre.phoenix.sensors.SensorInitializationStrategy;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.ControlType;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import com.revrobotics.CANSparkMax.ControlType;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -25,13 +27,15 @@ public class SwerveModule {
     private SparkMaxPIDController _steeringPID;
     private RelativeEncoder _steeringEncoder;
 
+    private CANCoder _absEncoder;
+
     private double _steerSetpoint;
     private double _driveSetpoint;
 
     public SwerveModule(SwerveModuleConstants constants) {
         _driveSparkMax = configSparkMax(constants.idDrive, _drivePID, _driveEncoder, constants.driveGains);
         _steeringSparkMax = configSparkMax(constants.idSteering, _steeringPID, _steeringEncoder, constants.steeringGains);
-        
+
         _drivePID = _driveSparkMax.getPIDController();
         _driveEncoder = _driveSparkMax.getEncoder();
 
@@ -40,15 +44,31 @@ public class SwerveModule {
 
         setPIDGains(_drivePID, constants.driveGains);
         setPIDGains(_steeringPID, constants.steeringGains);
-                
+
         _steerSetpoint = 0;
+
+        _absEncoder = configCANCoder(constants.canCoderId, constants.cancoderZeroAngle);
+        calibrateSteering();
     }
 
     private static CANSparkMax configSparkMax(int id, SparkMaxPIDController pidController, RelativeEncoder encoder, PIDFGains gains) {
         CANSparkMax sparkMax = new CANSparkMax(id, MotorType.kBrushless);
         sparkMax.setInverted(false);
-        
+
         return sparkMax;
+    }
+    
+    private static CANCoder configCANCoder(int id, double zeroAngle) {
+        
+        CANCoder canCoder = new CANCoder(id);
+        // Always set CANCoder relative encoder to 0 on boot
+        canCoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToZero);
+        // Configure the offset angle of the magnet
+        canCoder.configMagnetOffset(360 - zeroAngle);
+    }
+
+    public void calibrateSteering() {
+        this._steeringEncoder.setPosition(_absEncoder.getAbsolutePosition() / 360 / Constants.Drivetrain.SwerveModuleConstants.steeringRatio);
     }
 
     private static void setPIDGains(SparkMaxPIDController pidController, PIDFGains gains) {
@@ -59,7 +79,7 @@ public class SwerveModule {
         pidController.setIZone(gains.getIZone());
         pidController.setOutputRange(-1.0,1.0);
     }
-    
+
     public void setDriveSteering(double percent) {
         this._steeringSparkMax.set(percent);
     }
@@ -71,7 +91,7 @@ public class SwerveModule {
         setDriveDrive(0);
         // setDriveSteering(0);
     }
-    
+
     public void setDesiredState(SwerveModuleState desiredState) {
         // Optimize the reference state to avoid spinning further than 90 degrees
         SwerveModuleState state = optimizeAngle(desiredState, Rotation2d.fromDegrees(getAngle()));
@@ -79,14 +99,14 @@ public class SwerveModule {
         _steerSetpoint = addDeltaFromZeroToEncoder(state.angle.getDegrees());
         _driveSetpoint = driveVelocityToRPM(state.speedMetersPerSecond);
 
-        if (state.speedMetersPerSecond != 0) { 
+        if (state.speedMetersPerSecond != 0) {
             _steeringPID.setReference(_steerSetpoint, ControlType.kPosition);
         }
         // _driveSparkMax.set(1 * Math.signum(state.speedMetersPerSecond));
         if (state.speedMetersPerSecond == 0)
             _driveSparkMax.set(0);
         else
-        _drivePID.setReference(_driveSetpoint, ControlType.kVelocity);
+            _drivePID.setReference(_driveSetpoint, ControlType.kVelocity);
     }
 
     public static SwerveModuleState optimizeAngle(SwerveModuleState desiredState, Rotation2d currentRadian) {
@@ -112,7 +132,7 @@ public class SwerveModule {
 
     private double driveVelocityToRPM(double velocity) {
         // divide by distance per revolution, multiply by a minute to get RPM
-        return velocity / (Constants.Drivetrain.SwerveModuleConstants.driveDPRMeters) * 60; 
+        return velocity / (Constants.Drivetrain.SwerveModuleConstants.driveDPRMeters) * 60;
     }
 
     public double getAbsSteeringPos() {
