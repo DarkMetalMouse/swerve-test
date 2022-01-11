@@ -22,20 +22,20 @@ public class Constants {
             public final PIDFGains driveGains;
             public final int idSteering;
             public final PIDFGains steeringGains;
-            public final double cancoderZeroPosition;
+            public final double cancoderZeroAngle;
             public final int canCoderId;
 
-            public SwerveModuleConstants(Translation2d position, int idDrive, int idSteering, double cancoderZeroPosition,int canCoderId) {
-                this(position, idDrive, idSteering, new PIDFGains(0.0002, 0, 0.01, 1.0/6/902.0, 50, 0), new PIDFGains(0.35, 0, 0, 0, 1, 0), cancoderZeroPosition, canCoderId);
+            public SwerveModuleConstants(Translation2d position, int idDrive, int idSteering, double cancoderZeroAngle,int canCoderId) {
+                this(position, idDrive, idSteering, new PIDFGains(0.0002, 0, 0.01, 1.0/6/902.0, 50, 0), new PIDFGains(0.35, 0, 0, 0, 1, 0), cancoderZeroAngle, canCoderId);
             }
 
-            public SwerveModuleConstants(Translation2d position, int idDrive, int idSteering, PIDFGains driveGains, PIDFGains steeringGains, double encoderZeroPosition, int canCoderId) {
+            public SwerveModuleConstants(Translation2d position, int idDrive, int idSteering, PIDFGains driveGains, PIDFGains steeringGains, double cancoderZeroAngle, int canCoderId) {
                 this.position = position;
                 this.idDrive = idDrive;
                 this.driveGains = driveGains;
                 this.idSteering = idSteering;
                 this.steeringGains = steeringGains;
-                this.cancoderZeroPosition = encoderZeroPosition;
+                this.cancoderZeroAngle = cancoderZeroAngle;
                 this.canCoderId = canCoderId;
             }
         }
