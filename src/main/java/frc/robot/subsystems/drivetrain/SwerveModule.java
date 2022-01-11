@@ -47,9 +47,7 @@ public class SwerveModule {
 
         _steerSetpoint = 0;
 
-        _absEncoder = new CANCoder(constants.canCoderId);
-        this._absEncoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToZero);
-        this._absEncoder.configMagnetOffset(360 - constants.cancoderZeroPosition);
+        _absEncoder = configCANCoder(constants.canCoderId, constants.cancoderZeroAngle);
         calibrateSteering();
     }
 
@@ -58,6 +56,15 @@ public class SwerveModule {
         sparkMax.setInverted(false);
 
         return sparkMax;
+    }
+    
+    private static CANCoder configCANCoder(int id, double zeroAngle) {
+        
+        CANCoder canCoder = new CANCoder(id);
+        // Always set CANCoder relative encoder to 0 on boot
+        canCoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToZero);
+        // Configure the offset angle of the magnet
+        canCoder.configMagnetOffset(360 - zeroAngle);
     }
 
     public void calibrateSteering() {
