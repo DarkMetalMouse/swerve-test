@@ -63,8 +63,8 @@ public class SwerveModule {
     public void setDriveSteering(double percent) {
         this._steeringSparkMax.set(percent);
     }
-    public void setDriveDrive(double voltage) {
-        this._driveSparkMax.setVoltage(voltage);
+    public void setDriveDrive(double percent) {
+        this._driveSparkMax.set(percent);
     }
 
     public void stop() {
