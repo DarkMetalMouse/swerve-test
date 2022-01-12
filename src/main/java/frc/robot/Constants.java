@@ -12,12 +12,14 @@ public class Constants {
 
     public static final class Drivetrain {
         public static class SwerveModuleConstants {
-            public static final double freeSpeedMetersPerSecond = 3.6576;
+            public static final double neoMaxSpeedRPM = 5600;
             public static final double driveRatio = 1.0 / 8.14; 
             public static final double steeringRatio = 1.0 / 12.8; 
-            public static final double wheelRadiusMeters = 0.0508; // 2 inches (in meters)
+            public static final double wheelRadiusMeters = 2 * 2.54 / 100; // 2 inches (in meters)
             public static final double wheelCircumferenceMeters = wheelRadiusMeters * 2 * Math.PI; 
             public static final double driveDPRMeters = wheelCircumferenceMeters * driveRatio;
+            public static final double freeSpeedMetersPerSecond = neoMaxSpeedRPM / 60 * driveDPRMeters;
+
             
             public final Translation2d position;
             public final int idDrive;
@@ -36,10 +38,14 @@ public class Constants {
                 this.steeringGains = steeringGains;
             }
         }
-        public static final SwerveModuleConstants TLModule = new SwerveModuleConstants(new Translation2d(-0.215, 0.215), 3, 4);
-        public static final SwerveModuleConstants TRModule = new SwerveModuleConstants(new Translation2d(0.215, 0.215), 1, 2);
-        public static final SwerveModuleConstants BLModule = new SwerveModuleConstants(new Translation2d(-0.215, -0.215), 5, 6);
-        public static final SwerveModuleConstants BRModule = new SwerveModuleConstants(new Translation2d(0.215, -0.215), 7, 8);
+
+        public static final double wheelBase = 0.43;
+        public static final double trackWidth = wheelBase;
+
+        public static final SwerveModuleConstants TLModule = new SwerveModuleConstants(new Translation2d(-trackWidth/2, wheelBase/2), 3, 4);
+        public static final SwerveModuleConstants TRModule = new SwerveModuleConstants(new Translation2d(trackWidth/2, wheelBase/2), 1, 2);
+        public static final SwerveModuleConstants BLModule = new SwerveModuleConstants(new Translation2d(-trackWidth/2, -wheelBase/2), 5, 6);
+        public static final SwerveModuleConstants BRModule = new SwerveModuleConstants(new Translation2d(trackWidth/2, -wheelBase/2), 7, 8);
 
         public static final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(TRModule.position,
                 TLModule.position, BRModule.position, BLModule.position);
@@ -55,10 +61,10 @@ public class Constants {
 
     public static final class Autonomous {
         // TODO: Calibrate
-        public static final double kMaxSpeedMetersPerSecond = 3.0;
-        public static final double kMaxAccelerationMetersPerSecondSquared = 1.0;
-        public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI;
-        public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI;
+        public static final double kMaxSpeedMetersPerSecond = 3.6;
+        public static final double kMaxAccelerationMetersPerSecondSquared = 8.0;
+        public static final double kMaxAngularSpeedRadiansPerSecond = 3.6 / Math.hypot(Drivetrain.trackWidth /2, Drivetrain.wheelBase / 2);
+        public static final double kMaxAngularSpeedRadiansPerSecondSquared = kMaxAngularSpeedRadiansPerSecond * 2;
 
         public static final double kPXController = 1;
         public static final double kPYController = 1;
