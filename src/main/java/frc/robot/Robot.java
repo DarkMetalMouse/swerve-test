@@ -65,7 +65,8 @@ public class Robot extends TimedRobot {
         // Start at the origin facing the +X direction
         new Pose2d(0, 0, new Rotation2d(0)),
         // Pass through these two interior waypoints, making an 's' curve path
-        List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
+        // List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
+        List.of(),
         // End 3 meters straight ahead of where we started, facing forward
         new Pose2d(3, 0, new Rotation2d(0)), config);
 
@@ -141,6 +142,7 @@ public class Robot extends TimedRobot {
   public void teleopInit() {
     drivetrain.drive(0.1, 0, 0, false);
     drivetrain.drive(0, 0, 0, false);
+    drivetrain.setDriveRPM(0);
   }
 
   /**
@@ -151,7 +153,7 @@ public class Robot extends TimedRobot {
     // drivetrain.setDriveRPM(SmartDashboard.getNumber("RPM", 0));
 
 
-    drivetrain.drive(joysticks.getDriveX() * SwerveModuleConstants.freeSpeedMetersPerSecond, joysticks.getDriveY()* SwerveModuleConstants.freeSpeedMetersPerSecond, joysticks.getSteerX(), _fieldRelative);
+    // drivetrain.drive(joysticks.getDriveX() * SwerveModuleConstants.freeSpeedMetersPerSecond, joysticks.getDriveY()* SwerveModuleConstants.freeSpeedMetersPerSecond, joysticks.getSteerX(), _fieldRelative);
     if (joysticks.backButtonPressed()) {
       drivetrain.resetYaw();
     }

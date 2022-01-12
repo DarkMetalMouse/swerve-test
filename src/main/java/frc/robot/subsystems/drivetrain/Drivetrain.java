@@ -40,6 +40,9 @@ public class Drivetrain {
         _odometry = new SwerveDriveOdometry(Constants.Drivetrain.kinematics, getRotation2d());
     }
 
+    double last = 0;
+    double mid = 0;
+
     public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
         xSpeed = -xSpeed;
         ySpeed = -ySpeed;
@@ -59,6 +62,31 @@ public class Drivetrain {
         for (int i = 0; i < _modules.length; i++) {
             _modules[i].setDesiredState(moduleStates[i]);
         }
+
+        short[] accel = new short[3];
+        _pigeon.getBiasedAccelerometer(accel);
+        double val = Math.sqrt(
+            Math.pow((double)accel[0] / Math.pow(2, 14), 2) 
+            + Math.pow((double)accel[1] / Math.pow(2, 14), 2)
+            ) * 9.80663;
+        SmartDashboard.putNumber("accel", val);
+        // if(last < mid && val < mid && mid > 10){
+            // System.out.println(mid);
+        // }
+        // if(val != mid) {
+            last = mid;
+            mid = val;
+        // }
+        
+        // System.out.println("REAL: " + Constants.Drivetrain.kinematics.toChassisSpeeds(_modules[0].getState(), _modules[1].getState(), _modules[2].getState(),
+        //     _modules[3].getState()));
+
+        // System.out.println("WANT: " + Constants.Drivetrain.kinematics.toChassisSpeeds(moduleStates[0], moduleStates[1], moduleStates[2],
+        //     moduleStates[3]));
+
+        // System.out.println(_odometry.getPoseMeters());
+        
+        
     }
 
     public void periodic() {
@@ -77,7 +105,7 @@ public class Drivetrain {
 
     public void setDriveRPM(double voltage) {
         for (SwerveModule swerveModule : _modules) {
-            swerveModule.setDriveRPM(voltage);
+            swerveModule.setDriveDrive(1);
         }
     }
 
@@ -96,11 +124,18 @@ public class Drivetrain {
         _pigeon.setFusedHeading(0);
     }
 
+    double max = 0;
+    
     public void printSetpoints() {
+        double sum = 0, avg;
         for (int i = 0; i < _modules.length; i++) {
             SmartDashboard.putNumber("steer " + i   , _modules[i].getSteeringSetpoint());
             SmartDashboard.putNumber("drive " + i, _modules[i].getDriveSetpoint());
-            SmartDashboard.putNumber("speed " + i, _modules[i].getDriveRPM());
+            sum += _modules[i].getDriveRPM();
+            // System.out.println(("speed " + i +" " + _modules[i].getDriveRPM()));
         }
+        avg = sum / _modules.length;
+        max = Math.max(avg, max);
+        System.out.println("average speed " +max);
     }
 }
