@@ -65,6 +65,8 @@ public class SwerveModule {
         canCoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToZero);
         // Configure the offset angle of the magnet
         canCoder.configMagnetOffset(360 - zeroAngle);
+
+        return canCoder;
     }
 
     public void calibrateSteering() {
